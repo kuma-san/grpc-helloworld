@@ -4,10 +4,9 @@ import (
 	"log"
 	"net"
 
+	pb "github.com/kuma-san/grpc-helloworld/helloworld"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	pb "github.com/kuma-san/grpc-helloworld/helloworld"
-
 )
 
 const (
@@ -16,10 +15,8 @@ const (
 
 type server struct{}
 
-func (s *server) SayHellow(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	return &pb.HelloReply{
-		Message: "Hello" + in.Name
-	}, nil
+func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
 }
 
 func main() {
@@ -27,9 +24,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+	println("Started listening tcp port" + port)
 	s := grpc.NewServer()
 	pb.RegisterGreeterServer(s, &server{})
-	if err := s.Serve(lis); err != nil {
+	if err := s.Serve(listen); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
